@@ -1,14 +1,14 @@
 pipeline {
-agent {
-docker { image 'maven:3.5.2'
-args '-v $HOME/.m2:/root/.m2'
-}
-}
+docker {
+        image 'maven:3-alpine'
+        label 'my-defined-label'
+        args  '-v /tmp:/tmp'
+    }
 stages {
-stage('Build') {
-steps {
-sh 'echo "test"'
-}
-}
+	stage('Build') {
+		steps {
+			sh 'echo "test"'
+		}
+	}
 }
 }  
