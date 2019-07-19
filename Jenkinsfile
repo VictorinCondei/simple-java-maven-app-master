@@ -1,14 +1,31 @@
 pipeline {
-docker {
-        image 'maven:3-alpine'
-        label 'my-defined-label'
-        args  '-v /tmp:/tmp'
+    agent {
+        docker {
+            image 'maven:3-alpine'
+            label 'my-maven'
+            args '-v /root/.m2:/root/.m2'
+        }
     }
-stages {
-	stage('Build') {
-		steps {
-			sh 'echo "test"'
-		}
-	}
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+            }
+        }
+    }
 }
-}  
